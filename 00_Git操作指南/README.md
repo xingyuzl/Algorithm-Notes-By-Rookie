@@ -102,11 +102,11 @@ git reflog
 
 git add之后是暂存区
 
-![git-stage](typora-user-images/0)
+![git-stage](typora-user-images/1)
 
 git commit以后就到了.git目录，是版本区
 
-<img src="typora-user-images/0" alt="git-stage-after-commit"  />
+![git-stage-after-commit](typora-user-images/2)
 
 ## 撤销修改
 
@@ -193,6 +193,10 @@ git checkout -b dev
 git branch dev
 git checkout dev
 ```
+
+此时提交修改都会在新的分支上操作了
+
+![git-br-on-master](typora-user-images/3)
 
 ### 查看当前分支
 
