@@ -188,6 +188,8 @@ $ git remote rm origin
 ```shell
 # 创建dev分支，然后切换到dev分支：-b参数表示创建并切换
 git checkout -b dev
+# 或者
+git switch -c dev
 
 #上述命令相当于两条命令
 git branch dev
@@ -197,6 +199,18 @@ git checkout dev
 此时提交修改都会在新的分支上操作了
 
 ![git-br-on-master](typora-user-images/3)
+
+### 切换分支
+
+```shell
+# 撤销修改是git checkout -- <file>
+git checkout dev
+
+# 或者
+git switch master
+```
+
+
 
 ### 查看当前分支
 
@@ -211,3 +225,234 @@ git branch
  git merge dev
 ```
 
+![image-20210614182141933](typora-user-images/image-20210614182141933.png)
+
+Fast-forward表示合并是“快进模式”，也就是直接把`master`指向`dev`的当前提交，所以合并速度非常快。
+
+还有其它模式的合并。
+
+比如在两个分支同时修改同一个文件
+
+![git-br-conflict-merged](typora-user-images/4)
+
+合并以后文件出现
+
+```shell
+Git is a distributed version control system.
+Git is free software distributed under the GPL.
+Git has a mutable index called stage.
+Git tracks changes of files.
+<<<<<<< HEAD
+Creating a new branch is quick & simple.
+=======
+Creating a new branch is quick AND simple.
+>>>>>>> feature1
+```
+
+此时手动修改再提交即可。
+
+### 删除分支
+
+```shell
+git branch -d dev
+```
+
+### Bug分支
+
+你正在dev分支上开发新功能，要两天。突然有一个bug要修复，但是你新功能开发了一半了，怎么办？
+
+```
+【1】 git stash，把工作现场储存起来。
+	此时git status查看时干净的了
+【2】切换到master分支（需要修改bug的分支），并从master分支创建新分支
+	git checkout master
+	git checkout -b issue-101
+【3】修改bug并add和commit
+	$ git add readme.txt 
+    $ git commit -m "fix bug 101"
+    [issue-101 4c805e2] fix bug 101
+ 		1 file changed, 1 insertion(+), 1 deletion(-)
+【4】切回master分支，合并，并删除issue-101分支
+【5】切回dev分支继续开发新功能
+【6】git stash list查看储存的工作现场
+	$ git stash list
+	stash@{0}: WIP on dev: f52c633 add merge
+【7】恢复工作现场
+	git stash apply stash@{0} 
+	git stash drop stash@{0} 
+    或者
+    git stash pop，恢复的同时也删掉了
+【8】在dev分支上修复bug，重放之前修复bug的提交
+	git cherry-pick 4c805e2
+```
+
+### Feature分支
+
+你要开发一个新功能，一般不可以把主分支搞乱。
+
+此时可以创建一个新分支
+
+```shell
+# 【1】新建分支
+git switch -c feature-vulcan
+# 【2】切回dev分支并准备合并
+git switch dev
+# 【3】上级说新功能不要了，且要就地销毁 （-d表示强制删除）
+git branch -d feature-vulcan
+```
+
+### 多人协作
+
+远程克隆时，Git自动把本地的`master`分支和远程的`master`分支对应起来了，并且，远程仓库的默认名称是`origin`。
+
+```shell
+git remote #查看远程库信息
+git remote -v #显示更详细的信息
+```
+
+```shell
+# 推送master到远程origin
+git push origin master
+# 推送dev到远程origin
+git push origin dev
+```
+
+```shell
+git clone 后，默认只能看到master分支
+要创建远程origin的dev分支到本地
+git checkout -b dev origin/dev
+此后就可以在dev上操作了，但是推送到远程的时候会出错，需要关联本地dev和远程dev
+git branch --set-upstream-to=origin/dev dev
+```
+
+### rebase
+
+-   rebase操作可以把本地未push的分叉提交历史整理成直线；
+-   rebase的目的是使得我们在查看历史提交的变化时更容易，因为分叉的提交需要三方对比。
+
+```shell
+$ git log --graph --pretty=oneline --abbrev-commit
+*   e0ea545 (HEAD -> master) Merge branch 'master' of github.com:michaelliao/learngit
+|\  
+| * f005ed4 (origin/master) set exit=1
+* | 582d922 add author
+* | 8875536 add comment
+|/  
+* d1be385 init hello
+...
+```
+
+rebase后
+
+```shell
+$ git log --graph --pretty=oneline --abbrev-commit
+* 7e61ed4 (HEAD -> master) add author
+* 3611cfe add comment
+* f005ed4 (origin/master) set exit=1
+* d1be385 init hello
+...
+```
+
+## 标签管理
+
+没有标签，发布版本时需要：“请把上周一的那个版本打包发布，commit号是6a5819e...”
+
+有了标签，“请把上周一的那个版本打包发布，版本号是v1.2”
+
+所以tag就是一个让人容易记住的有意义的名字，它跟某个commit绑在一起。
+
+### 创建标签
+
+```shell
+git tag <name>
+# 将最新commit打包成v1.0
+$ git tag v1.0
+# 同时需要将上周五的commit打包成v0.9时
+#首先查看历史提交的commit id
+git log --pretty=oneline --abbrev-commit
+git tag v0.9 f52c633
+#可以指定附加信息
+git tag -a <tagname> -m "version 0.1 released" 1094adb
+```
+
+如果commit既出现在master分支，又出现在dev分支，那么在这两个分支上都可以看到这个标签。
+
+### 查看标签
+
+```shell
+git tag
+# 查看标签信息
+git show <tagname>
+$ git show v0.9
+```
+
+### 删除标签
+
+```shell
+git tag -d v0.1
+# 删除远程标签
+# 首先删除本地标签
+git tag -d v0.9
+# 再从远程删除
+git push origin :refs/tags/v0.9
+```
+
+### 推送标签到远程
+
+```shell
+git push origin v1.0
+# 一次推送所有标签到远程
+git push origin --tags
+```
+
+## 参与github代码维护
+
+比如你要贡献bootstrap。
+
+```shell
+【1】将代码fork到自己账号下
+【2】自己账号下的bootstrap clone到本地
+【3】修改本地代码并提交至自己账号的bootstrap
+【4】向bootstrap官方提交pull request，等待人家的同意
+```
+
+```ascii
+┌─ GitHub ────────────────────────────────────┐
+│                                             │
+│ ┌─────────────────┐     ┌─────────────────┐ │
+│ │ twbs/bootstrap  │────>│  my/bootstrap   │ │
+│ └─────────────────┘     └─────────────────┘ │
+│                                  ▲          │
+└──────────────────────────────────┼──────────┘
+                                   ▼
+                          ┌─────────────────┐
+                          │ local/bootstrap │
+                          └─────────────────┘
+```
+
+## 代码关联github和gitee
+
+```shell
+# 查看远程库信息
+git remote -v
+	origin	git@gitee.com:liaoxuefeng/learngit.git (fetch)
+	origin	git@gitee.com:liaoxuefeng/learngit.git (push)
+# 删除本地所有已经关联的远程库
+git remote rm origin
+# 关联GitHub
+git remote add github git@github.com:xingyuzl/Algorithm-Notes-By-Rookie.git
+# 关联Gitee
+git remote add gitee git@gitee.com:xingyuzl/Algorithm-Notes-By-Rookie.git
+# 推送
+git push github master
+git push gitee master
+┌─────────┐ ┌─────────┐
+│ GitHub  │ │  Gitee  │
+└─────────┘ └─────────┘
+     ▲           ▲
+     └─────┬─────┘
+           │
+    ┌─────────────┐
+    │ Local Repo  │
+    └─────────────┘
+```
