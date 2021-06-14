@@ -77,3 +77,21 @@ git log --pretty=oneline
 ```
 
 ![image-20210614162858248](typora-user-images/image-20210614162858248.png)
+
+## 版本回退
+
+```shell
+git reset --hard 50a1b
+```
+
+![image-20210614163612373](typora-user-images/image-20210614163612373.png)
+
+Git回退速度快，因为回退就是HEAD指针的移动。
+
+此时Git版本库就没有d93的版本了。如果第二天后悔了
+
+```shell
+git reflog
+```
+
+![image-20210614163949851](typora-user-images/image-20210614163949851.png)
