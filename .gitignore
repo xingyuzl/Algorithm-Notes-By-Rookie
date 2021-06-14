@@ -1,3 +1,6 @@
+## 强制提交忽略的文件，加-f，如git add -f App.class
+## git check-ignore -v App.class 查看哪些规则应用到了App.class
+
 # Windows:
 Thumbs.db
 ehthumbs.db
@@ -14,3 +17,11 @@ build
 # My configurations:
 db.ini
 deploy_key_rsa
+
+# 排除所有.开头的隐藏文件:
+.*
+# 排除所有.class文件:
+*.class
+
+# 不排除.gitignore和App.class:
+!.gitignore
