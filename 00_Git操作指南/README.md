@@ -95,3 +95,108 @@ git reflog
 ```
 
 ![image-20210614163949851](typora-user-images/image-20210614163949851.png)
+
+## 工作区、暂存区、版本区
+
+你能看见的当前工作目录是工作区
+
+git add之后是暂存区
+
+![git-stage](typora-user-images/0)
+
+git commit以后就到了.git目录，是版本区
+
+<img src="typora-user-images/0" alt="git-stage-after-commit"  />
+
+## 撤销修改
+
+-   修改工作区，未添加到暂存区（没有add）
+
+```shell
+git checkout -- file # 其实是用版本库替换工作区
+```
+
+-   修改内容到暂存区（没有commit）
+
+```shell
+git reset HEAD <file>
+```
+
+-   提交到版本库，没有发布到远程库
+
+```
+参考版本回退
+```
+
+-   发布到远程库
+
+```
+gameover，因为git是分布式的
+```
+
+## 删除文件
+
+```shell
+git rm <file> #作用等同git add 
+git commit -m '' #到版本库
+```
+
+## 远程仓库
+
+```shell
+# 【1】创建SSH Key。一路enter下去
+ssh-keygen -t rsa -C "youremail@example.com"
+# 【2】去github或者码云网页授权本电脑
+```
+
+### 关联远程仓库
+
+-   本地新建目录（远程仓库新建项目未初始化）
+
+```shell
+git remote add origin git@gitee.com:xingyuzl/Algorithm-Notes-By-Rookie.git #origin是远程仓库名称，Git默认叫法
+#由于远程库是空的，我们第一次推送master分支时，加上了-u参数，Git不但会把本地的master分支内容推送的远程新的master分支，还会把本地的master分支和远程的master分支关联起来，在以后的推送或者拉取时就可以简化命令。
+git push -u origin master # 此时本地和远程一模一样了
+```
+
+-   远程有库且已经初始化
+
+```shell
+git clone ....
+```
+
+### 查看远程库信息
+
+```shell
+git remote -v
+```
+
+### 删除远程库
+
+```shell
+git remote rm <name>
+
+$ git remote rm origin
+```
+
+## 分支管理
+
+如开发一个新功能，可以起一个新分支，自己开发完了以后再合并到原来分支。
+
+### 创建分支
+
+```shell
+# 创建dev分支，然后切换到dev分支：-b参数表示创建并切换
+git checkout -b dev
+
+#上述命令相当于两条命令
+git branch dev
+git checkout dev
+```
+
+### 查看当前分支
+
+```shell
+git branch
+```
+
