@@ -69,5 +69,11 @@ $ git config --global i18n.logoutputencoding utf-8  # 输出 log 编码
 set LESSCHARSET=utf-8
 ```
 
+## 查看版本快照（commit）信息
 
+```shell
+git log
+git log --pretty=oneline
+```
 
+![image-20210614162858248](typora-user-images/image-20210614162858248.png)
