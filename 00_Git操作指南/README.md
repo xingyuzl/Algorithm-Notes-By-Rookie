@@ -10,6 +10,7 @@ git init
 
 ```shell
 git add <file>
+git add --all
 
 git add file1.txt
 ```
