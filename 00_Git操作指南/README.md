@@ -204,3 +204,10 @@ git checkout dev
 git branch
 ```
 
+### 合并分支
+
+```shell
+ # 合并指定分支到当前分支
+ git merge dev
+```
+
