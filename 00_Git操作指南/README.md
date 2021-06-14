@@ -35,3 +35,5 @@ git status
 git diff <file>
 ```
 
+![image-20210614161737033](typora-user-images/image-20210614161737033.png)
+
