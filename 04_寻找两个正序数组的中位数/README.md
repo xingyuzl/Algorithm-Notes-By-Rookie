@@ -122,9 +122,79 @@ class Solution:
 
 ### 2.3.  二分查找法
 
-时间复杂度为 $O(\log(m+n))$，空间复杂度为 $O(1)$
+一般而言，看到有序数组就应该要想到二分查找。
 
-**待补充**
+在一个有序数组里，二分查找的时间复杂度为$O(\log n)$。几乎为最快的算法了。
+
+比如求下列两个数组的中位数：
+
+![image-20210615130521232](typora-user-images/image-20210615130521232.png)
+
+利用排除法。
+
+上述两个数组中位数索引 $k=6$，先比较 $nums1[2] = 4$ 和 $nums2[2] = 3$。发现$ 4 > 3$，所以可以得出结论，$nums1$ 中比3小的元素最多2个。所以 $nums2[2] = 3$ 最多排在第5位。这样可以肯定的是 $nums2[0]$、 $nums2[1]$、 $nums2[2]$肯定不是中位数排除掉。
+
+<img src="typora-user-images/image-20210615132531743.png" alt="image-20210615132531743"  />
+
+接下来重复使用删除法。
+
+<img src="typora-user-images/image-20210615133028357.png" alt="image-20210615133028357" style="zoom:80%;" />
+
+继续删除法
+
+<img src="typora-user-images/image-20210615133828555.png" alt="image-20210615133828555" style="zoom:80%;" />
+
+翻译成代码如下。
+
+```python
+class Solution:
+    def findMedianSortedArrays(self, nums1: List[int], nums2: List[int]) -> float:
+        m, n = len(nums1), len(nums2)
+        length = m + n
+        
+        def getKthElement(k):
+            nums1_offset, nums2_offset = 0, 0
+            while True:
+                # 特殊情况
+                if nums1_offset == m:
+                    return nums2[nums2_offset + k]
+                if nums2_offset == n:
+                    return nums1[nums1_offset + k]
+                if k == 0:
+                    return min(nums1[nums1_offset], nums2[nums2_offset])
+                # 正常情况
+                new_nums1_offset = min(nums1_offset + (k + 1) // 2 - 1, m - 1);
+                new_nums2_offset = min(nums2_offset + (k + 1) // 2 - 1, n - 1);
+                pivot1, pivot2 = nums1[new_nums1_offset], nums2[new_nums2_offset]
+                if pivot1 < pivot2:
+                    k -= new_nums1_offset - nums1_offset + 1
+                    nums1_offset = new_nums1_offset + 1
+                else:
+                    k -= new_nums2_offset - nums2_offset + 1
+                    nums2_offset = new_nums2_offset + 1
+        if length % 2 == 1:
+            return getKthElement(length // 2)
+        else:
+            return (getKthElement(length // 2) + getKthElement(length // 2 - 1)) / 2
+```
+
+注意，上述绘图解题中，$k$ 要一直跌倒到0。
+
+#### 2.3.1 复杂度分析
+
+##### 2.3.1.1 时间复杂度
+
+每次迭代都会排除掉大约一半的数据（$(k + 1) // 2 - 1$）。因此其复杂度位$O(\log (m + n))$，其中 $m$ 是 $nums1$ 数组的长度，$n$ 是 $nums2$ 数组的长度。
+
+##### 2.3.1.2 空间复杂度
+
+上述程序可以看到，并没有申请与$m$ 或 $n$ 相关的新空间，因此空间复杂度位 $O(1)$。
+
+#### 2.3.2 执行
+
+![image-20210615145925588](typora-user-images/image-20210615145925588.png)
+
+
 
 ### 2.4. 划分数组法
 
